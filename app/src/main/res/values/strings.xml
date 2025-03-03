@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CryptoExchange</string>
+    <string name="screen_prices_title">Prices</string>
+    <string name="screen_price_detail_title">Price Details</string>
+</resources>
