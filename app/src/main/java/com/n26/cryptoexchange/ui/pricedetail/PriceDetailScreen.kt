@@ -55,7 +55,11 @@ fun PriceDetailScreen(id: String, modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        val currencies = listOf("EUR" to "€ 100.000,00", "USD" to "$ 100.000,00", "GBP" to "£ 100.000,00")
+        val currencies = listOf(
+            "EUR" to "€ 100.000,00",
+            "USD" to "$ 100.000,00",
+            "GBP" to "£ 100.000,00"
+        )
         currencies.forEach { (currency, amount) ->
             PriceCard(PriceItem(price = amount, date = currency)) { }
         }
@@ -67,6 +71,6 @@ fun PriceDetailScreen(id: String, modifier: Modifier = Modifier) {
     showSystemUi = true
 )
 @Composable
-fun PreviewPriceDetailScreen(){
+fun PreviewPriceDetailScreen() {
     PriceDetailScreen("test")
 }
