@@ -17,7 +17,7 @@ import com.n26.cryptoexchange.ui.components.PriceCard
 
 @Composable
 fun PricesScreen(
-    onItemClick: () -> Unit,
+    onItemClick: (time: Long) -> Unit,
     viewModel: PricesViewModel = viewModel(factory = ViewModelFactory())
 ) {
     val items by viewModel.priceItems.collectAsState()
@@ -33,7 +33,7 @@ fun PricesScreen(
 }
 
 @Composable
-fun PricesView(items: List<PriceItem>, onClick: () -> Unit) {
+fun PricesView(items: List<PriceItem>, onClick: (Long) -> Unit) {
     LazyColumn(
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {

@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,11 +23,51 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.n26.cryptoexchange.domain.model.PriceItem
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.n26.cryptoexchange.di.ViewModelFactory
 import com.n26.cryptoexchange.ui.components.PriceCard
+import com.n26.cryptoexchange.ui.formatter.getFormattedDate
 
 @Composable
-fun PriceDetailScreen(id: String, modifier: Modifier = Modifier) {
+fun PriceDetailScreen(
+    time: Long,
+    viewModel: PriceDetailViewModel = viewModel(factory = ViewModelFactory()),
+    modifier: Modifier = Modifier
+) {
+    val state by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getPriceDetail(time)
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (state) {
+            PriceDetailUiState.Loading -> {
+                CircularProgressIndicator()
+            }
+
+            is PriceDetailUiState.Success -> {
+                PriceDetailSuccessScreen(
+                    time = time,
+                    success = state as PriceDetailUiState.Success,
+                    modifier = modifier
+                )
+            }
+
+            is PriceDetailUiState.Error -> TODO()
+        }
+    }
+}
+
+@Composable
+private fun PriceDetailSuccessScreen(
+    time: Long,
+    success: PriceDetailUiState.Success,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .fillMaxSize(),
@@ -48,24 +92,33 @@ fun PriceDetailScreen(id: String, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Jan 25th,\n2025",
+            text = time.getFormattedDate(),
             fontSize = 24.sp,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        val currencies = listOf(
-            "EUR" to "€",
-            "USD" to "$",
-            "GBP" to "£"
+        val prices = listOfNotNull(
+            success.eurPriceItem?.let { it to ("EUR" to "€") },
+            success.usdPriceItem?.let { it to ("USD" to "$") },
+            success.gbpPriceItem?.let { it to ("GBP" to "£") },
         )
-        currencies.forEach { (currency, currencySymbol) ->
+
+        prices.forEach { (priceItem, values) ->
             PriceCard(
-                PriceItem(price = 0.0, time = 1740268800),
-                currencySymbol = currencySymbol,
-                alternateLabel = currency,
+                priceItem,
+                currencySymbol = values.second,
+                alternateLabel = values.first,
             ) { }
+        }
+
+        if (success.eurPriceItem == null ||
+            success.usdPriceItem == null ||
+            success.gbpPriceItem == null
+        ) {
+            Spacer(modifier = Modifier.height(12.dp))
+            CircularProgressIndicator()
         }
     }
 }
@@ -76,5 +129,5 @@ fun PriceDetailScreen(id: String, modifier: Modifier = Modifier) {
 )
 @Composable
 fun PreviewPriceDetailScreen() {
-    PriceDetailScreen("test")
+    PriceDetailScreen(time = 1740268800)
 }

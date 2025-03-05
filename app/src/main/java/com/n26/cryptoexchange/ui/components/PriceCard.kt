@@ -23,12 +23,14 @@ fun PriceCard(
     item: PriceItem,
     currencySymbol: String = "€",
     alternateLabel: String? = null,
-    onClick: () -> Unit
+    onClick: (Long) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .clickable {
+                onClick(item.time)
+            }
             .padding(8.dp)
     ) {
         Row(

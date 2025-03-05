@@ -30,4 +30,27 @@ class PriceRepositoryImpl(
             }.let { emit(it.reversed()) }
         }
     }
+
+    override suspend fun getPriceItem(
+        from: String,
+        to: String,
+        time: Long
+    ): Flow<PriceItem> = flow {
+        val response = historicalApi.getHistoricalData(
+            fromSymbol = from,
+            toSymbol = to,
+            limit = 1,
+            toTs = time
+        )
+
+        val data = response.body()?.data?.data
+        if (response.isSuccessful && data != null) {
+            data.map {
+                PriceItem(
+                    price = it.close,
+                    time = it.time
+                )
+            }.let { emit(it.last()) }
+        }
+    }
 }
