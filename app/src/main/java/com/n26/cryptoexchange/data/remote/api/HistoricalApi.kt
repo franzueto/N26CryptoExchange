@@ -11,6 +11,7 @@ interface HistoricalApi {
     suspend fun getHistoricalData(
         @Query("fsym") fromSymbol: String,
         @Query("tsym") toSymbol: String,
-        @Query("limit") limit: Int
+        @Query("limit") limit: Int,
+        @Query("toTs") toTs: Long? = null,
     ): Response<HistoricalResponse>
 }

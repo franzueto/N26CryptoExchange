@@ -10,4 +10,10 @@ interface PriceRepository {
         to: String,
         amount: Int,
     ): Flow<List<PriceItem>>
+
+    suspend fun getPriceItem(
+        from: String,
+        to: String,
+        time: Long,
+    ): Flow<PriceItem>
 }
