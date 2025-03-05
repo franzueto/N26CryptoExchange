@@ -40,7 +40,7 @@ fun TopAppBarNavigation(
                     text = title
                 )
             },
-            navigationIcon =  {
+            navigationIcon = {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
