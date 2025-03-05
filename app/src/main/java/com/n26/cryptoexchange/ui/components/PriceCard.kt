@@ -15,9 +15,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.n26.cryptoexchange.domain.model.PriceItem
+import com.n26.cryptoexchange.ui.formatter.getFormattedDate
+import com.n26.cryptoexchange.ui.formatter.getFormattedPrice
 
 @Composable
-fun PriceCard(item: PriceItem, onClick: () -> Unit) {
+fun PriceCard(
+    item: PriceItem,
+    currencySymbol: String = "€",
+    alternateLabel: String? = null,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -32,12 +39,12 @@ fun PriceCard(item: PriceItem, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = item.date,
+                text = alternateLabel ?: item.getFormattedDate(),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Start
             )
             Text(
-                text = item.price,
+                text = item.getFormattedPrice(currencySymbol),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.End
             )
@@ -50,8 +57,8 @@ fun PriceCard(item: PriceItem, onClick: () -> Unit) {
 fun PriceCardPreview() {
     PriceCard(
         PriceItem(
-            price = "100,000.00",
-            date = "2025-03-02",
+            price = 96274.12,
+            time = 1740268800
         ),
         onClick = {}
     )

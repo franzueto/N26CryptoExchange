@@ -18,7 +18,11 @@ class PricesViewModel(
 
     fun loadPrices() {
         viewModelScope.launch {
-            repository.getPriceItems().collect { items ->
+            repository.getPriceItems(
+                from = "BTC",
+                to = "EUR",
+                amount = 20
+            ).collect { items ->
                 _priceItems.value = items
             }
         }

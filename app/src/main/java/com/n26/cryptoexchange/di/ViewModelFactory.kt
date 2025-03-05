@@ -3,6 +3,7 @@ package com.n26.cryptoexchange.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.n26.cryptoexchange.data.price.repository.PriceRepositoryImpl
+import com.n26.cryptoexchange.data.remote.RetrofitClient
 import com.n26.cryptoexchange.ui.prices.PricesViewModel
 
 class ViewModelFactory : ViewModelProvider.Factory {
@@ -11,7 +12,7 @@ class ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(PricesViewModel::class.java) -> PricesViewModel(
-                PriceRepositoryImpl()
+                PriceRepositoryImpl(RetrofitClient.historicalApiService)
             ) as T
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }
