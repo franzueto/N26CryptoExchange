@@ -5,5 +5,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface PriceRepository {
 
-    fun getPriceItems(): Flow<List<PriceItem>>
+    suspend fun getPriceItems(
+        from: String,
+        to: String,
+        amount: Int,
+    ): Flow<List<PriceItem>>
 }

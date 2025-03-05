@@ -54,8 +54,8 @@ fun PricesView(items: List<PriceItem>, onClick: () -> Unit) {
 fun PricesViewPreview() {
     val items = List(15) { index ->
         PriceItem(
-            price = "$${(index + 1) * 10}.00",
-            date = "2025-02-${index + 1}"
+            price = 96274.12,
+            time = 1740268800
         )
     }
     Column {

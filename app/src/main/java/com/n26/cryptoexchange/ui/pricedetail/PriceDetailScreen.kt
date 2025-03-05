@@ -56,12 +56,16 @@ fun PriceDetailScreen(id: String, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 
         val currencies = listOf(
-            "EUR" to "€ 100.000,00",
-            "USD" to "$ 100.000,00",
-            "GBP" to "£ 100.000,00"
+            "EUR" to "€",
+            "USD" to "$",
+            "GBP" to "£"
         )
-        currencies.forEach { (currency, amount) ->
-            PriceCard(PriceItem(price = amount, date = currency)) { }
+        currencies.forEach { (currency, currencySymbol) ->
+            PriceCard(
+                PriceItem(price = 0.0, time = 1740268800),
+                currencySymbol = currencySymbol,
+                alternateLabel = currency,
+            ) { }
         }
     }
 }
