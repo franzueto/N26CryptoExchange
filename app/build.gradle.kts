@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.jacoco)
 }
 
 android {
@@ -22,6 +23,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            isTestCoverageEnabled = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -60,6 +64,9 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockwebserver)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -75,5 +82,62 @@ ktlint {
     reporters {
         reporter(ReporterType.PLAIN)
         reporter(ReporterType.HTML)
+    }
+}
+
+jacoco {
+    toolVersion = libs.versions.jacoco.get()
+}
+
+val fileFilter = listOf(
+    "**/R.class",
+    "**/R\$*.class",
+    "**/BuildConfig.*",
+    "**/Manifest*.*",
+    "**/*Activity*.*",
+    "**/*Fragment*.*",
+    "**/*Screen*.*",
+    "**/ui/components/*.*",
+    "**/ui/theme/*.*",
+    "**/ui/navigation/*.*"
+)
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest", "connectedDebugAndroidTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    val kotlinClasses = fileTree("$buildDir/tmp/kotlin-classes/debug") {
+        exclude(fileFilter)
+    }
+
+    sourceDirectories.setFrom(files("src/main/java"))
+    classDirectories.setFrom(files(kotlinClasses))
+    executionData.setFrom(fileTree(buildDir).include("**/*.exec", "**/*.ec"))
+}
+
+tasks.register("jacocoCoverageVerification", JacocoCoverageVerification::class) {
+    dependsOn("jacocoTestReport")
+
+    val kotlinClasses = fileTree("$buildDir/tmp/kotlin-classes/debug") {
+        exclude(fileFilter)
+    }
+
+    sourceDirectories.setFrom(files("src/main/java"))
+    classDirectories.setFrom(files(kotlinClasses))
+    executionData.setFrom(fileTree(buildDir).include("**/*.exec", "**/*.ec"))
+
+    violationRules {
+        rule {
+            element = "CLASS"
+            limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = BigDecimal("0.80")
+            }
+        }
     }
 }

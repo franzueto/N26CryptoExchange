@@ -11,18 +11,18 @@ import java.util.Locale
 import kotlin.text.replace
 import kotlin.text.trim
 
-internal fun Long.getFormattedDate(): String {
+internal fun Long.getFormattedDate(zoneId: ZoneId = ZoneId.systemDefault()): String {
     val instant = Instant.ofEpochSecond(this)
 
-    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+    val localDateTime = LocalDateTime.ofInstant(instant, zoneId)
 
     val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.getDefault())
 
     return localDateTime.format(formatter)
 }
 
-internal fun PriceItem.getFormattedDate(): String {
-    return time.getFormattedDate()
+internal fun PriceItem.getFormattedDate(zoneId: ZoneId = ZoneId.systemDefault()): String {
+    return time.getFormattedDate(zoneId)
 }
 
 internal fun PriceItem.getFormattedPrice(
