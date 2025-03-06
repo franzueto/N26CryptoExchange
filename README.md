@@ -18,6 +18,11 @@ Contributions are welcome! Please feel free to open a pull request or submit an 
 * **User-Friendly Interface:** The UI is designed with Jetpack Compose, providing a smooth and responsive user experience.
 * **Data Display:** The app presents the data in a clear and concise manner, allowing users to easily track their favorite cryptocurrencies.
 
+### App experience
+| Price List Screenshot | Video|
+| -------- | ------- |
+|<img src="https://github.com/user-attachments/assets/9e6b16e5-5d34-4a64-afab-e318fe7a83aa" width="300" /> | [Screen_recording_20250305_011540.webm](https://github.com/user-attachments/assets/78a6b383-3636-4740-8c86-425db62d83bf) |
+
 ## API
 
 The application interacts with a remote API to retrieve cryptocurrency data from [developers.coindesk.com](https://developers.coindesk.com/) API.
