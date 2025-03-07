@@ -33,7 +33,7 @@ class PricesViewModelTest {
             PriceItem(price = 16600.0, time = 1672617600L)
         )
         coEvery {
-            repository.getPriceItems("BTC", "EUR", 20)
+            repository.getPriceItemsPeriodically("BTC", "EUR", 20, 60_000L)
         } returns flowOf(expectedPriceItems)
 
         // When
@@ -41,8 +41,8 @@ class PricesViewModelTest {
 
         // Then
         testDispatcher.scheduler.advanceUntilIdle()
-        val actualPriceItems = viewModel.priceItems.value
-        assertEquals(expectedPriceItems, actualPriceItems)
+        val actualUiState = viewModel.uiState.value
+        assertEquals(expectedPriceItems, (actualUiState as PricesUiState.Success).items)
     }
 
     @Test
@@ -50,7 +50,7 @@ class PricesViewModelTest {
         // Given
         val expectedPriceItems = emptyList<PriceItem>()
         coEvery {
-            repository.getPriceItems("BTC", "EUR", 20)
+            repository.getPriceItemsPeriodically("BTC", "EUR", 20, 60_000L)
         } returns flowOf(expectedPriceItems)
 
         // When
@@ -58,7 +58,23 @@ class PricesViewModelTest {
 
         // Then
         testDispatcher.scheduler.advanceUntilIdle()
-        val actualPriceItems = viewModel.priceItems.value
-        assertEquals(expectedPriceItems, actualPriceItems)
+        val actualUiState = viewModel.uiState.value
+        assertEquals(expectedPriceItems, (actualUiState as PricesUiState.Success).items)
+    }
+
+    @Test
+    fun `loadPrices should handle exception`() = runTest {
+        // Given
+        coEvery {
+            repository.getPriceItemsPeriodically("BTC", "EUR", 20, 60_000L)
+        } throws IllegalStateException()
+
+        // When
+        viewModel.loadPrices()
+
+        // Then
+        testDispatcher.scheduler.advanceUntilIdle()
+        val actualUiState = viewModel.uiState.value
+        assertEquals("Something went wrong", (actualUiState as PricesUiState.Error).message)
     }
 }

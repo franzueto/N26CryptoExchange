@@ -5,10 +5,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface PriceRepository {
 
-    suspend fun getPriceItems(
+    suspend fun getPriceItemsPeriodically(
         from: String,
         to: String,
         amount: Int,
+        interval: Long,
     ): Flow<List<PriceItem>>
 
     suspend fun getPriceItem(

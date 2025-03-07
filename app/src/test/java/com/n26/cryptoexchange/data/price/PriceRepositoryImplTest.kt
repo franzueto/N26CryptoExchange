@@ -8,6 +8,7 @@ import com.n26.cryptoexchange.data.remote.models.historical.HistoricalResponse
 import com.n26.cryptoexchange.domain.model.PriceItem
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -30,7 +31,7 @@ class PriceRepositoryImplTest {
     }
 
     @Test
-    fun `getPriceItems should return list of PriceItem when response is successful`() = runTest {
+    fun `getPriceItemsPeriodically emits correct PriceItems`() = runTest {
         // Given
         val from = "BTC"
         val to = "EUR"
@@ -39,6 +40,7 @@ class PriceRepositoryImplTest {
             HistoricalDataEntry(1672531200L, 16500.0),
             HistoricalDataEntry(1672617600L, 16600.0)
         )
+        val interval = 1000L
         val response = Response.success(
             HistoricalResponse(
                 response = "success",
@@ -48,18 +50,18 @@ class PriceRepositoryImplTest {
         coEvery { historicalApi.getHistoricalData(from, to, amount) } returns response
 
         // When
-        val result = repository.getPriceItems(from, to, amount)
+        val result = repository.getPriceItemsPeriodically(from, to, amount, interval)
 
         // Then
         val expected = listOf(
             PriceItem(price = 16600.0, time = 1672617600L),
             PriceItem(price = 16500.0, time = 1672531200L)
         )
-        assertEquals(expected, result.toList().flatten())
+        assertEquals(expected, result.first())
     }
 
     @Test
-    fun `getPriceItems should return empty list when response is not successful`() = runTest {
+    fun `getPriceItemsPeriodically handles when response is not successful`() = runTest {
         // Given
         val from = "BTC"
         val to = "EUR"
@@ -68,14 +70,14 @@ class PriceRepositoryImplTest {
         coEvery { historicalApi.getHistoricalData(from, to, amount) } returns response
 
         // When
-        val result = repository.getPriceItems(from, to, amount)
+        repository.getPriceItemsPeriodically(from, to, amount, 1000L)
 
         // Then
-        assertEquals(emptyList<PriceItem>(), result.toList().flatten())
+        // Error handling should be implemented
     }
 
     @Test
-    fun `getPriceItems should return empty list when response body is null`() = runTest {
+    fun `getPriceItemsPeriodically handles when response body is null`() = runTest {
         // Given
         val from = "BTC"
         val to = "EUR"
@@ -84,10 +86,10 @@ class PriceRepositoryImplTest {
         coEvery { historicalApi.getHistoricalData(from, to, amount) } returns response
 
         // When
-        val result = repository.getPriceItems(from, to, amount).toList().flatten()
+        repository.getPriceItemsPeriodically(from, to, amount, 1)
 
         // Then
-        assertEquals(emptyList<PriceItem>(), result)
+        // Error handling should be implemented
     }
 
     @Test

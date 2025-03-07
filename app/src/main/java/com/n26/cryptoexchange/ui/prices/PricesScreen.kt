@@ -1,13 +1,18 @@
 package com.n26.cryptoexchange.ui.prices
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,16 +25,27 @@ fun PricesScreen(
     onItemClick: (time: Long) -> Unit,
     viewModel: PricesViewModel = viewModel(factory = ViewModelFactory())
 ) {
-    val items by viewModel.priceItems.collectAsState()
+    val items by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadPrices()
     }
 
-    PricesView(
-        items = items,
-        onClick = onItemClick
-    )
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (items) {
+            PricesUiState.Loading -> CircularProgressIndicator()
+            is PricesUiState.Success -> {
+                PricesView(
+                    items = (items as PricesUiState.Success).items,
+                    onClick = onItemClick
+                )
+            }
+            is PricesUiState.Error -> TODO()
+        }
+    }
 }
 
 @Composable
